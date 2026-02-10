@@ -18,7 +18,6 @@
 🚀 **Live URL:**  
 👉 https://propchains.vercel.app
 
-![Release](https://img.shields.io/github/v/release/sairajp88/propchain)
 
 ---
 
