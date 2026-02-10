@@ -1,12 +1,18 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
+import { useCompare } from "../context/CompareContext";
 
 const PropertyDetail = () => {
   const { id } = useParams();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const { compareList, addToCompare, removeFromCompare } = useCompare();
+
+  const isSelected = compareList.includes(id);
+  const isDisabled = !isSelected && compareList.length >= 3;
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -39,6 +45,26 @@ const PropertyDetail = () => {
       <p>
         {property.locality}, {property.city}
       </p>
+
+      {/* Compare button */}
+      <button
+        onClick={() =>
+          isSelected ? removeFromCompare(id) : addToCompare(id)
+        }
+        disabled={isDisabled}
+        style={{
+          margin: "0.75rem 0",
+          padding: "0.5rem 1rem",
+          borderRadius: "6px",
+          border: "1px solid #2563eb",
+          background: isSelected ? "#2563eb" : "white",
+          color: isSelected ? "white" : "#2563eb",
+          cursor: isDisabled ? "not-allowed" : "pointer",
+          opacity: isDisabled ? 0.5 : 1,
+        }}
+      >
+        {isSelected ? "Remove from Compare" : "Add to Compare"}
+      </button>
 
       <h3>Description</h3>
       <p>{property.description}</p>
