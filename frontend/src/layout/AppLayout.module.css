@@ -1,0 +1,12 @@
+.wrapper {
+  min-height: 100vh;
+  background-color: #ffffff;
+  display: flex;
+  justify-content: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 420px; /* mobile-first */
+  padding: 16px;
+}
