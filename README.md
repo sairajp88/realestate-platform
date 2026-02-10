@@ -1,4 +1,4 @@
-# 🏡 PropChain  
+# 🏡 PropChains  
 ### *Browse. Compare. Decide.*
 
 <p align="center">
