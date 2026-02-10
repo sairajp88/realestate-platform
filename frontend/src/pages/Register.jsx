@@ -1,12 +1,18 @@
 import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 
-function Register() {
+const Register = () => {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
     role: "buyer",
   });
+
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
@@ -16,50 +22,117 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.message || "Registration failed");
-        return;
-      }
-
-      alert("Registration successful. Please login.");
-    } catch {
-      setError("Something went wrong");
+      await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/register`,
+        form
+      );
+      navigate("/login");
+    } catch (err) {
+      setError(
+        err.response?.data?.message || "Registration failed"
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Register</h2>
+    <div>
+      {/* Header */}
+      <div style={{ marginBottom: "1.5rem" }}>
+        <h1>Create an account</h1>
+        <small>It only takes a minute</small>
+      </div>
 
-      {error && <p>{error}</p>}
+      {/* Error */}
+      {error && <p style={{ marginBottom: "0.75rem" }}>{error}</p>}
 
-      <input name="name" placeholder="Name" onChange={handleChange} />
-      <input name="email" placeholder="Email" onChange={handleChange} />
-      <input
-        name="password"
-        type="password"
-        placeholder="Password"
-        onChange={handleChange}
-      />
+      {/* Form */}
+      <form
+        onSubmit={handleSubmit}
+        style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
+      >
+        <input
+          name="name"
+          placeholder="Full name"
+          value={form.name}
+          onChange={handleChange}
+          required
+        />
 
-      <select name="role" onChange={handleChange}>
-        <option value="buyer">Buyer</option>
-        <option value="seller">Seller</option>
-      </select>
+        <input
+          type="email"
+          name="email"
+          placeholder="Email address"
+          value={form.email}
+          onChange={handleChange}
+          required
+        />
 
-      <button type="submit">Register</button>
-    </form>
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={form.password}
+          onChange={handleChange}
+          required
+        />
+
+        {/* Role selector with custom arrow */}
+        <div style={{ position: "relative" }}>
+          <select
+            name="role"
+            value={form.role}
+            onChange={handleChange}
+          >
+            <option value="buyer">Buyer</option>
+            <option value="seller">Seller</option>
+          </select>
+
+          <span
+            style={{
+              position: "absolute",
+              right: "12px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              pointerEvents: "none",
+              opacity: 0.6,
+              fontSize: "0.7rem",
+            }}
+          >
+            ▼
+          </span>
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            marginTop: "0.5rem",
+            padding: "0.65rem",
+            borderRadius: "14px",
+            background: "var(--text-primary)",
+            color: "var(--bg-main)",
+            fontWeight: 500,
+            opacity: loading ? 0.7 : 1,
+          }}
+        >
+          {loading ? "Creating account…" : "Create account"}
+        </button>
+      </form>
+
+      {/* Footer */}
+      <div style={{ marginTop: "1.25rem" }}>
+        <small>
+          Already have an account?{" "}
+          <Link to="/login">Sign in</Link>
+        </small>
+      </div>
+    </div>
   );
-}
+};
 
 export default Register;

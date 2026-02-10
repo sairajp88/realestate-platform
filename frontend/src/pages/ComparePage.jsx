@@ -17,7 +17,7 @@ const ComparePage = () => {
           { propertyIds: compareList }
         );
         setProperties(res.data.properties);
-      } catch (err) {
+      } catch {
         setError("Failed to load comparison");
       } finally {
         setLoading(false);
@@ -31,73 +31,135 @@ const ComparePage = () => {
 
   if (compareList.length < 2) {
     return (
-      <div style={{ padding: "1rem" }}>
-        <p>Select at least 2 properties to compare.</p>
-        <Link to="/">Go back</Link>
+      <div>
+        <p>No comparison yet.</p>
+        <small>Select at least two properties to compare.</small>
+
+        <div style={{ marginTop: "0.75rem" }}>
+          <Link to="/">
+            <small>Browse properties</small>
+          </Link>
+        </div>
       </div>
     );
   }
 
-  if (loading) return <p>Loading comparison...</p>;
+  if (loading) return <p>Loading comparison…</p>;
   if (error) return <p>{error}</p>;
 
   return (
-    <div style={{ padding: "1rem" }}>
-      <h1>Compare Properties</h1>
+    <div>
+      <div style={{ marginBottom: "1.5rem" }}>
+        <h1>Compare</h1>
+        <small>{properties.length} properties selected</small>
+      </div>
 
       <div
         style={{
-          display: "flex",
-          gap: "1rem",
-          overflowX: "auto",
-          marginTop: "1rem",
+          display: "grid",
+          gridTemplateColumns: `repeat(${properties.length}, 1fr)`,
+          gap: "0.75rem",
+          marginBottom: "1.5rem",
         }}
       >
-        {properties.map((property) => (
+        {properties.map((p) => (
           <div
-            key={property._id}
+            key={p._id}
             style={{
-              minWidth: "250px",
-              border: "1px solid #e5e7eb",
-              borderRadius: "8px",
-              padding: "1rem",
+              background: "var(--bg-muted)",
+              borderRadius: "14px",
+              padding: "0.75rem",
             }}
           >
-            <h3>{property.title}</h3>
-            <p><strong>Price:</strong> ₹ {property.price}</p>
-            <p><strong>Area:</strong> {property.area} sqft</p>
-            <p>
-              <strong>Location:</strong>{" "}
-              {property.locality}, {property.city}
-            </p>
-
-            <strong>Amenities:</strong>
-            <ul>
-              {property.amenities?.length
-                ? property.amenities.map((a, i) => (
-                    <li key={i}>{a}</li>
-                  ))
-                : <li>None</li>}
-            </ul>
+            <h3
+              style={{
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {p.title}
+            </h3>
+            <small>
+              {p.locality}, {p.city}
+            </small>
           </div>
         ))}
       </div>
 
+      <CompareRow label="Price">
+        {properties.map((p) => (
+          <p key={p._id} style={{ fontWeight: 500 }}>
+            ₹ {p.price}
+          </p>
+        ))}
+      </CompareRow>
+
+      <CompareRow label="Area">
+        {properties.map((p) => (
+          <p key={p._id}>{p.area} sqft</p>
+        ))}
+      </CompareRow>
+
+      <CompareRow label="Amenities">
+        {properties.map((p) => (
+          <div key={p._id} style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+            {p.amenities && p.amenities.length > 0 ? (
+              p.amenities.map((a, i) => (
+                <span
+                  key={i}
+                  style={{
+                    background: "var(--bg-muted)",
+                    borderRadius: "999px",
+                    padding: "0.25rem 0.5rem",
+                    fontSize: "0.75rem",
+                  }}
+                >
+                  {a}
+                </span>
+              ))
+            ) : (
+              <small>None</small>
+            )}
+          </div>
+        ))}
+      </CompareRow>
+
       <button
         onClick={clearCompare}
         style={{
-          marginTop: "1rem",
-          padding: "0.5rem 1rem",
-          borderRadius: "6px",
-          border: "1px solid #ef4444",
-          background: "white",
-          color: "#ef4444",
+          marginTop: "2rem",
+          width: "100%",
+          padding: "0.75rem",
+          borderRadius: "16px",
+          background: "var(--bg-muted)",
+          fontWeight: 500,
         }}
       >
-        Clear Comparison
+        Clear comparison
       </button>
     </div>
   );
 };
+
+function CompareRow({ label, children }) {
+  return (
+    <div style={{ marginBottom: "1.5rem" }}>
+      <small style={{ marginBottom: "0.25rem", display: "block" }}>
+        {label}
+      </small>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: `repeat(${children.length}, 1fr)`,
+          gap: "0.75rem",
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
 
 export default ComparePage;

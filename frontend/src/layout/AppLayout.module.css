@@ -1,21 +1,74 @@
-/* =========================
-   App Layout — Phase 6
-   ========================= */
-
 .wrapper {
   min-height: 100vh;
-  background-color: var(--bg-main);
 }
 
-/* Focused mobile-first column */
-.container {
-  max-width: 420px; /* critical */
+/* ===== TOP BAR ===== */
+.topbar {
+  max-width: 420px;
   margin: 0 auto;
+  padding: 1.2rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  padding-left: 1rem;
-  padding-right: 1rem;
+/* ===== BRAND ===== */
+.brand {
+  text-decoration: none;
+  color: inherit;
+}
 
-  /* Top + bottom breathing space */
-  padding-top: 1.25rem;
-  padding-bottom: 2rem;
+.brandText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+}
+
+.brandTop {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.35em;
+}
+
+.brandDot {
+  font-size: 1.2rem;
+  margin: 0.15rem 0;
+  opacity: 0.5;
+}
+
+.brandBottom {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  opacity: 0.9;
+}
+
+/* ===== ACTIONS ===== */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.linkBtn {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  transition: opacity 0.15s ease;
+}
+
+.linkBtn:hover {
+  opacity: 1;
+}
+
+.username {
+  font-size: 0.8rem;
+  opacity: 0.55;
+}
+
+/* ===== PAGE CONTAINER ===== */
+.container {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
 }

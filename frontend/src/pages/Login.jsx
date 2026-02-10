@@ -1,60 +1,119 @@
 import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 
-function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const Login = () => {
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
+        form
+      );
 
-      const data = await res.json();
+      const { token, user } = res.data;
 
-      if (!res.ok) {
-        setError(data.message || "Login failed");
-        return;
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // Redirect based on role
+      if (user.role === "seller") {
+        navigate("/seller/dashboard");
+      } else {
+        navigate("/");
       }
-
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      alert("Login successful");
     } catch (err) {
-      setError("Something went wrong");
+      setError(
+        err.response?.data?.message || "Invalid email or password"
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Login</h2>
+    <div>
+      {/* Header */}
+      <div style={{ marginBottom: "1.5rem" }}>
+        <h1>Welcome back</h1>
+        <small>Sign in to continue</small>
+      </div>
 
-      {error && <p>{error}</p>}
+      {/* Error */}
+      {error && (
+        <p style={{ marginBottom: "0.75rem" }}>{error}</p>
+      )}
 
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+      {/* Form */}
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.75rem",
+        }}
+      >
+        <input
+          type="email"
+          name="email"
+          placeholder="Email address"
+          value={form.email}
+          onChange={handleChange}
+          required
+        />
 
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={form.password}
+          onChange={handleChange}
+          required
+        />
 
-      <button type="submit">Login</button>
-    </form>
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            marginTop: "0.5rem",
+            padding: "0.65rem",
+            borderRadius: "14px",
+            background: "var(--text-primary)",
+            color: "var(--bg-main)",
+            fontWeight: 500,
+            opacity: loading ? 0.7 : 1,
+          }}
+        >
+          {loading ? "Signing in…" : "Sign in"}
+        </button>
+      </form>
+
+      {/* Footer */}
+      <div style={{ marginTop: "1.25rem" }}>
+        <small>
+          Don’t have an account?{" "}
+          <Link to="/register">Create one</Link>
+        </small>
+      </div>
+    </div>
   );
-}
+};
 
 export default Login;

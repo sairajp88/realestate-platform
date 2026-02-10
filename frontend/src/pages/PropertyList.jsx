@@ -9,29 +9,44 @@ const PropertyList = () => {
   const [error, setError] = useState("");
 
   const { compareList, addToCompare, removeFromCompare } = useCompare();
+  const user = JSON.parse(localStorage.getItem("user") || "null");
 
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/property");
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/property`
+        );
         setProperties(res.data);
-      } catch (err) {
+      } catch {
         setError("Failed to load properties");
       } finally {
         setLoading(false);
       }
     };
-
     fetchProperties();
   }, []);
 
-  if (loading) {
-    return <p>Loading properties…</p>; // skeletons come later
-  }
+  if (loading) return <p>Loading properties...</p>;
+  if (error) return <p>{error}</p>;
 
-  if (error) {
-    return <p>{error}</p>;
-  }
+  const capsuleStyle = (state) => ({
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "0.35rem 0.75rem",
+    fontSize: "0.75rem",
+    borderRadius: "999px",
+    background:
+      state === "selected"
+        ? "var(--text-primary)"
+        : "var(--bg-main)",
+    color:
+      state === "selected"
+        ? "var(--bg-main)"
+        : "var(--text-primary)",
+    opacity: state === "disabled" ? 0.4 : 1,
+  });
 
   return (
     <div>
@@ -41,85 +56,61 @@ const PropertyList = () => {
         <small>Browse available listings</small>
       </div>
 
-      {properties.length === 0 && (
-        <p>No properties available.</p>
+      {/* Seller shortcut */}
+      {user?.role === "seller" && (
+        <div style={{ marginBottom: "1.25rem" }}>
+          <Link
+            to="/seller/dashboard"
+            style={{ fontSize: "0.8rem", opacity: 0.7 }}
+          >
+            Go to seller dashboard →
+          </Link>
+        </div>
       )}
 
-      {/* Property list */}
+      {/* Cards */}
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         {properties.map((property) => {
           const isSelected = compareList.includes(property._id);
           const isDisabled = !isSelected && compareList.length >= 3;
 
+          const state = isDisabled
+            ? "disabled"
+            : isSelected
+            ? "selected"
+            : "default";
+
           return (
             <div
               key={property._id}
               style={{
-                background: "var(--bg-muted)",
-                borderRadius: "16px",
                 padding: "1rem",
-                boxShadow:
-                  "0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04)",
-                transition: "transform 0.1s ease",
+                borderRadius: "18px",
+                background: "var(--bg-muted)",
               }}
             >
-              <Link
-                to={`/property/${property._id}`}
-                style={{ display: "block" }}
-              >
-                {/* Title */}
-                <h3
-                  style={{
-                    marginBottom: "0.25rem",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {property.title}
-                </h3>
-
-                {/* Price */}
-                <p
-                  style={{
-                    fontWeight: 500,
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  ₹ {property.price}
-                </p>
-
-                {/* Meta info */}
+              <Link to={`/property/${property._id}`}>
+                <h3>{property.title}</h3>
+                <p>₹ {property.price}</p>
                 <small>
-                  {property.area} sqft · {property.locality}, {property.city}
+                  {property.area} sqft · {property.locality},{" "}
+                  {property.city}
                 </small>
               </Link>
 
-              {/* Compare action */}
-              <button
-                onClick={() =>
-                  isSelected
-                    ? removeFromCompare(property._id)
-                    : addToCompare(property._id)
-                }
-                disabled={isDisabled}
-                style={{
-                  marginTop: "0.75rem",
-                  padding: "0.4rem 0.75rem",
-                  borderRadius: "999px",
-                  fontSize: "0.85rem",
-                  background: isSelected
-                    ? "var(--text-primary)"
-                    : "transparent",
-                  color: isSelected
-                    ? "var(--bg-main)"
-                    : "var(--text-primary)",
-                  border: "1px solid var(--border-subtle)",
-                  opacity: isDisabled ? 0.5 : 1,
-                }}
-              >
-                {isSelected ? "Remove from compare" : "Add to compare"}
-              </button>
+              <div style={{ marginTop: "0.75rem" }}>
+                <button
+                  onClick={() =>
+                    isSelected
+                      ? removeFromCompare(property._id)
+                      : addToCompare(property._id)
+                  }
+                  disabled={isDisabled}
+                  style={capsuleStyle(state)}
+                >
+                  {isSelected ? "Selected" : "Add to compare"}
+                </button>
+              </div>
             </div>
           );
         })}

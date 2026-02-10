@@ -1,11 +1,45 @@
-.heading {
-  font-size: 24px;
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 8px;
+.wrapper {
+  min-height: 100vh;
 }
 
-.text {
-  font-size: 14px;
-  color: #6b7280;
+.topbar {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 0.9rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.2px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.linkBtn {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  transition: opacity 0.15s ease;
+}
+
+.linkBtn:hover {
+  opacity: 1;
+}
+
+.username {
+  font-size: 0.8rem;
+  opacity: 0.6;
+}
+
+.container {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
 }

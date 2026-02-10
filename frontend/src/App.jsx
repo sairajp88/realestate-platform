@@ -11,6 +11,7 @@ import SellerDashboard from "./pages/SellerDashboard";
 
 import CompareBar from "./components/CompareBar";
 import SellerRoute from "./components/SellerRoute";
+import AuthRedirect from "./components/AuthRedirect";
 
 function App() {
   return (
@@ -19,12 +20,30 @@ function App() {
 
       <AppLayout>
         <Routes>
+          {/* Public pages */}
           <Route path="/" element={<PropertyList />} />
           <Route path="/property/:id" element={<PropertyDetail />} />
           <Route path="/compare" element={<ComparePage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
 
+          {/* Auth pages (blocked if already logged in) */}
+          <Route
+            path="/login"
+            element={
+              <AuthRedirect>
+                <Login />
+              </AuthRedirect>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <AuthRedirect>
+                <Register />
+              </AuthRedirect>
+            }
+          />
+
+          {/* Seller-only */}
           <Route
             path="/seller/dashboard"
             element={

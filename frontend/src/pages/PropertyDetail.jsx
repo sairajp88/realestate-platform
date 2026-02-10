@@ -5,6 +5,7 @@ import { useCompare } from "../context/CompareContext";
 
 const PropertyDetail = () => {
   const { id } = useParams();
+
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -15,13 +16,16 @@ const PropertyDetail = () => {
   const isDisabled = !isSelected && compareList.length >= 3;
 
   useEffect(() => {
+    // ✅ Guard: do not fetch until id exists
+    if (!id) return;
+
     const fetchProperty = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/property/${id}`
+          `${import.meta.env.VITE_API_BASE_URL}/property/${id}`
         );
         setProperty(res.data);
-      } catch (err) {
+      } catch {
         setError("Property not found");
       } finally {
         setLoading(false);
@@ -31,60 +35,72 @@ const PropertyDetail = () => {
     fetchProperty();
   }, [id]);
 
+  // Extra safety
+  if (!id) return null;
+
   if (loading) return <p>Loading property...</p>;
   if (error) return <p>{error}</p>;
   if (!property) return null;
 
+  const capsuleStyle = (state) => ({
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "0.4rem 0.9rem",
+    fontSize: "0.8rem",
+    borderRadius: "999px",
+    background:
+      state === "selected"
+        ? "var(--text-primary)"
+        : "var(--bg-main)",
+    color:
+      state === "selected"
+        ? "var(--bg-main)"
+        : "var(--text-primary)",
+    opacity: state === "disabled" ? 0.4 : 1,
+  });
+
+  const state = isDisabled
+    ? "disabled"
+    : isSelected
+    ? "selected"
+    : "default";
+
   return (
-    <div style={{ padding: "1rem" }}>
-      <Link to="/">← Back to listings</Link>
+    <div>
+      <Link to="/" style={{ fontSize: "0.75rem", opacity: 0.7 }}>
+        ← Back to listings
+      </Link>
 
-      <h1>{property.title}</h1>
-      <p>₹ {property.price}</p>
-      <p>{property.area} sqft</p>
-      <p>
-        {property.locality}, {property.city}
-      </p>
+      <div style={{ margin: "1rem 0" }}>
+        <h1>{property.title}</h1>
+        <p>₹ {property.price}</p>
+        <small>
+          {property.area} sqft · {property.locality}, {property.city}
+        </small>
+      </div>
 
-      {/* Compare button */}
+      {/* Compare capsule */}
       <button
         onClick={() =>
           isSelected ? removeFromCompare(id) : addToCompare(id)
         }
         disabled={isDisabled}
-        style={{
-          margin: "0.75rem 0",
-          padding: "0.5rem 1rem",
-          borderRadius: "6px",
-          border: "1px solid #2563eb",
-          background: isSelected ? "#2563eb" : "white",
-          color: isSelected ? "white" : "#2563eb",
-          cursor: isDisabled ? "not-allowed" : "pointer",
-          opacity: isDisabled ? 0.5 : 1,
-        }}
+        style={capsuleStyle(state)}
       >
-        {isSelected ? "Remove from Compare" : "Add to Compare"}
+        {isSelected ? "Selected" : "Add to compare"}
       </button>
 
-      <h3>Description</h3>
-      <p>{property.description}</p>
+      <div style={{ marginTop: "1.75rem" }}>
+        <h3>Description</h3>
+        <p>{property.description}</p>
+      </div>
 
-      {property.amenities && property.amenities.length > 0 && (
-        <>
+      {property.amenities?.length > 0 && (
+        <div style={{ marginTop: "1.5rem" }}>
           <h3>Amenities</h3>
-          <ul>
-            {property.amenities.map((item, index) => (
-              <li key={index}>{item}</li>
-            ))}
-          </ul>
-        </>
-      )}
-
-      {property.sellerId?.name && (
-        <>
-          <h3>Seller</h3>
-          <p>{property.sellerId.name}</p>
-        </>
+          <small>{property.amenities.join(" · ")}</small>
+        </div>
       )}
     </div>
   );
