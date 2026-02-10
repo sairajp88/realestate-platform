@@ -1,8 +1,12 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useCompare } from "../context/CompareContext";
 
 const CompareBar = () => {
   const { compareList } = useCompare();
+  const location = useLocation();
+
+  // Hide compare bar on compare page
+  if (location.pathname === "/compare") return null;
 
   if (compareList.length < 2) return null;
 

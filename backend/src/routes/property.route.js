@@ -5,7 +5,10 @@ import {
   getAllProperties,
   getPropertyById,
   compareProperties,
+  getMyProperties,
 } from "../controllers/property.controller.js";
+
+
 
 const router = express.Router();
 
@@ -17,6 +20,9 @@ router.get("/", getAllProperties);
 
 // Compare properties (PUBLIC)
 router.post("/compare", compareProperties);
+
+// Seller: get own properties
+router.get("/my", authMiddleware, getMyProperties);
 
 // Public single property
 router.get("/:id", getPropertyById);

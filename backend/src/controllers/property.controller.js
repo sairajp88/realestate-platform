@@ -115,4 +115,22 @@ export const compareProperties = async (req, res, next) => {
     next(error);
   }
 };
+// GET MY PROPERTIES (SELLER ONLY)
+export const getMyProperties = async (req, res, next) => {
+  try {
+    if (req.user.role !== "seller") {
+      return res.status(403).json({
+        message: "Only sellers can access their properties",
+      });
+    }
+
+    const properties = await Property.find({
+      sellerId: req.user.id,
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json(properties);
+  } catch (error) {
+    next(error);
+  }
+};
 
