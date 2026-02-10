@@ -25,15 +25,27 @@ const PropertyList = () => {
     fetchProperties();
   }, []);
 
-  if (loading) return <p>Loading properties...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) {
+    return <p>Loading properties…</p>; // skeletons come later
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
 
   return (
-    <div style={{ padding: "1rem" }}>
-      <h1>Properties</h1>
+    <div>
+      {/* Page header */}
+      <div style={{ marginBottom: "1.5rem" }}>
+        <h1>Properties</h1>
+        <small>Browse available listings</small>
+      </div>
 
-      {properties.length === 0 && <p>No properties available</p>}
+      {properties.length === 0 && (
+        <p>No properties available.</p>
+      )}
 
+      {/* Property list */}
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         {properties.map((property) => {
           const isSelected = compareList.includes(property._id);
@@ -43,26 +55,47 @@ const PropertyList = () => {
             <div
               key={property._id}
               style={{
+                background: "var(--bg-muted)",
+                borderRadius: "16px",
                 padding: "1rem",
-                border: "1px solid #e5e7eb",
-                borderRadius: "8px",
+                boxShadow:
+                  "0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04)",
+                transition: "transform 0.1s ease",
               }}
             >
               <Link
                 to={`/property/${property._id}`}
-                style={{
-                  textDecoration: "none",
-                  color: "inherit",
-                }}
+                style={{ display: "block" }}
               >
-                <h3>{property.title}</h3>
-                <p>₹ {property.price}</p>
-                <p>{property.area} sqft</p>
-                <p>
-                  {property.locality}, {property.city}
+                {/* Title */}
+                <h3
+                  style={{
+                    marginBottom: "0.25rem",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {property.title}
+                </h3>
+
+                {/* Price */}
+                <p
+                  style={{
+                    fontWeight: 500,
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  ₹ {property.price}
                 </p>
+
+                {/* Meta info */}
+                <small>
+                  {property.area} sqft · {property.locality}, {property.city}
+                </small>
               </Link>
 
+              {/* Compare action */}
               <button
                 onClick={() =>
                   isSelected
@@ -71,17 +104,21 @@ const PropertyList = () => {
                 }
                 disabled={isDisabled}
                 style={{
-                  marginTop: "0.5rem",
-                  padding: "0.4rem 0.8rem",
-                  borderRadius: "6px",
-                  border: "1px solid #2563eb",
-                  background: isSelected ? "#2563eb" : "white",
-                  color: isSelected ? "white" : "#2563eb",
-                  cursor: isDisabled ? "not-allowed" : "pointer",
+                  marginTop: "0.75rem",
+                  padding: "0.4rem 0.75rem",
+                  borderRadius: "999px",
+                  fontSize: "0.85rem",
+                  background: isSelected
+                    ? "var(--text-primary)"
+                    : "transparent",
+                  color: isSelected
+                    ? "var(--bg-main)"
+                    : "var(--text-primary)",
+                  border: "1px solid var(--border-subtle)",
                   opacity: isDisabled ? 0.5 : 1,
                 }}
               >
-                {isSelected ? "Remove from Compare" : "Add to Compare"}
+                {isSelected ? "Remove from compare" : "Add to compare"}
               </button>
             </div>
           );

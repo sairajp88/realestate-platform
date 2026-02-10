@@ -74,7 +74,6 @@ function SellerDashboard() {
         return;
       }
 
-      // Reset form
       setForm({
         title: "",
         description: "",
@@ -85,7 +84,6 @@ function SellerDashboard() {
         amenities: "",
       });
 
-      // Refresh listings
       fetchMyProperties();
     } catch {
       setError("Something went wrong");
@@ -94,86 +92,107 @@ function SellerDashboard() {
 
   return (
     <div>
-      <h2>Seller Dashboard</h2>
+      {/* Header */}
+      <div style={{ marginBottom: "1.5rem" }}>
+        <h1>Hello 👋</h1>
+        <small>Your properties and listings</small>
+      </div>
 
-      <h3>Add Property</h3>
+      {/* Add Property */}
+      <div
+        style={{
+          background: "var(--bg-muted)",
+          borderRadius: "16px",
+          padding: "1rem",
+          marginBottom: "2rem",
+        }}
+      >
+        <h3 style={{ marginBottom: "0.75rem" }}>Add property</h3>
 
-      {error && <p>{error}</p>}
+        {error && <p>{error}</p>}
 
-      <form onSubmit={handleSubmit}>
-        <input
-          name="title"
-          placeholder="Title"
-          value={form.title}
-          onChange={handleChange}
-        />
+        <form
+          onSubmit={handleSubmit}
+          style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
+        >
+          <input name="title" placeholder="Title" value={form.title} onChange={handleChange} />
+          <textarea
+            name="description"
+            placeholder="Description"
+            value={form.description}
+            onChange={handleChange}
+          />
+          <input name="price" type="number" placeholder="Price" value={form.price} onChange={handleChange} />
+          <input name="area" type="number" placeholder="Area (sqft)" value={form.area} onChange={handleChange} />
+          <input name="city" placeholder="City" value={form.city} onChange={handleChange} />
+          <input name="locality" placeholder="Locality" value={form.locality} onChange={handleChange} />
+          <input
+            name="amenities"
+            placeholder="Amenities (comma separated)"
+            value={form.amenities}
+            onChange={handleChange}
+          />
 
-        <textarea
-          name="description"
-          placeholder="Description"
-          value={form.description}
-          onChange={handleChange}
-        />
+          <button
+            type="submit"
+            style={{
+              marginTop: "0.5rem",
+              padding: "0.6rem",
+              borderRadius: "12px",
+              background: "var(--text-primary)",
+              color: "var(--bg-main)",
+              fontWeight: 500,
+            }}
+          >
+            Add property
+          </button>
+        </form>
+      </div>
 
-        <input
-          name="price"
-          type="number"
-          placeholder="Price"
-          value={form.price}
-          onChange={handleChange}
-        />
+      {/* My Listings */}
+      <div>
+        <h3 style={{ marginBottom: "0.75rem" }}>My listings</h3>
 
-        <input
-          name="area"
-          type="number"
-          placeholder="Area (sqft)"
-          value={form.area}
-          onChange={handleChange}
-        />
+        {loading ? (
+          <p>Loading your listings…</p>
+        ) : properties.length === 0 ? (
+          <p>You have not added any properties yet.</p>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            {properties.map((property) => (
+              <div
+                key={property._id}
+                style={{
+                  background: "var(--bg-muted)",
+                  borderRadius: "16px",
+                  padding: "1rem",
+                  boxShadow:
+                    "0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04)",
+                }}
+              >
+                <h3
+                  style={{
+                    marginBottom: "0.25rem",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {property.title}
+                </h3>
 
-        <input
-          name="city"
-          placeholder="City"
-          value={form.city}
-          onChange={handleChange}
-        />
+                <p style={{ fontWeight: 500, marginBottom: "0.5rem" }}>
+                  ₹ {property.price}
+                </p>
 
-        <input
-          name="locality"
-          placeholder="Locality"
-          value={form.locality}
-          onChange={handleChange}
-        />
-
-        <input
-          name="amenities"
-          placeholder="Amenities (comma separated)"
-          value={form.amenities}
-          onChange={handleChange}
-        />
-
-        <button type="submit">Add Property</button>
-      </form>
-
-      <hr />
-
-      <h3>My Listings</h3>
-
-      {loading ? (
-        <p>Loading your listings...</p>
-      ) : properties.length === 0 ? (
-        <p>You have not added any properties yet.</p>
-      ) : (
-        <ul>
-          {properties.map((property) => (
-            <li key={property._id}>
-              <strong>{property.title}</strong> — ₹{property.price}
-              <br />
-              {property.city}, {property.locality} · {property.area} sqft
-            </li>
-          ))}
-        </ul>
-      )}
+                <small>
+                  {property.area} sqft · {property.locality}, {property.city}
+                </small>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

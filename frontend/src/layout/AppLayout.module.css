@@ -1,12 +1,21 @@
+/* =========================
+   App Layout — Phase 6
+   ========================= */
+
 .wrapper {
   min-height: 100vh;
-  background-color: #ffffff;
-  display: flex;
-  justify-content: center;
+  background-color: var(--bg-main);
 }
 
+/* Focused mobile-first column */
 .container {
-  width: 100%;
-  max-width: 420px; /* mobile-first */
-  padding: 16px;
+  max-width: 420px; /* critical */
+  margin: 0 auto;
+
+  padding-left: 1rem;
+  padding-right: 1rem;
+
+  /* Top + bottom breathing space */
+  padding-top: 1.25rem;
+  padding-bottom: 2rem;
 }
