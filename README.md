@@ -3,10 +3,8 @@
 
 <p align="center">
   <a href="https://propchains.vercel.app" target="_blank">
-    <img src="https://img.shields.io/badge/Live%20Demo-PropChain-blueviolet?style=for-the-badge&logo=vercel" />
   </a>
   <img src="https://img.shields.io/badge/MERN-Stack-success?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Mobile--First-UI-orange?style=for-the-badge" />
 </p>
 
 <p align="center">
