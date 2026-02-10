@@ -71,3 +71,48 @@ export const getPropertyById = async (req, res, next) => {
     next(error);
   }
 };
+
+// COMPARE PROPERTIES (PUBLIC)
+export const compareProperties = async (req, res, next) => {
+  try {
+    const { propertyIds } = req.body;
+
+    // Validate array
+    if (!Array.isArray(propertyIds)) {
+      return res.status(400).json({
+        message: "propertyIds array is required",
+      });
+    }
+
+    // Validate length (2–3 only)
+    if (propertyIds.length < 2 || propertyIds.length > 3) {
+      return res.status(400).json({
+        message: "You can compare 2 or 3 properties only",
+      });
+    }
+
+    // Fetch properties
+    const properties = await Property.find({
+      _id: { $in: propertyIds },
+    });
+
+    // Check if all properties exist
+    if (properties.length !== propertyIds.length) {
+      return res.status(404).json({
+        message: "One or more properties not found",
+      });
+    }
+
+    // Preserve order as sent by frontend
+    const orderedProperties = propertyIds.map((id) =>
+      properties.find((property) => property._id.toString() === id)
+    );
+
+    res.status(200).json({
+      properties: orderedProperties,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

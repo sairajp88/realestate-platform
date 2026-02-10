@@ -4,6 +4,7 @@ import {
   createProperty,
   getAllProperties,
   getPropertyById,
+  compareProperties,
 } from "../controllers/property.controller.js";
 
 const router = express.Router();
@@ -13,6 +14,11 @@ router.post("/", authMiddleware, createProperty);
 
 // Public
 router.get("/", getAllProperties);
+
+// Compare properties (PUBLIC)
+router.post("/compare", compareProperties);
+
+// Public single property
 router.get("/:id", getPropertyById);
 
 export default router;
