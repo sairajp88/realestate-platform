@@ -15,12 +15,27 @@ connectDB();
 const app = express();
 
 // ✅ CORS (production-safe)
+const allowedOrigins = [
+  "https://propchains.vercel.app",
+  "http://localhost:5173"
+];
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "*",
+    origin: function (origin, callback) {
+      // allow server-to-server & Postman
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
+
 
 app.use(express.json());
 
