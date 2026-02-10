@@ -40,6 +40,12 @@ const propertySchema = new mongoose.Schema(
       default: [],
     },
 
+    sellerContact: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
     sellerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

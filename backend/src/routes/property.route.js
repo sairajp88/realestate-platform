@@ -8,8 +8,6 @@ import {
   getMyProperties,
 } from "../controllers/property.controller.js";
 
-
-
 const router = express.Router();
 
 // Seller only
@@ -18,7 +16,7 @@ router.post("/", authMiddleware, createProperty);
 // Public
 router.get("/", getAllProperties);
 
-// Compare properties (PUBLIC)
+// Compare properties (public)
 router.post("/compare", compareProperties);
 
 // Seller: get own properties

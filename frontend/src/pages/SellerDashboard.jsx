@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+const API = import.meta.env.VITE_API_BASE_URL;
+
 function SellerDashboard() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,17 +15,29 @@ function SellerDashboard() {
     city: "",
     locality: "",
     amenities: "",
+    sellerContact: "",
   });
 
   const token = localStorage.getItem("token");
 
   const fetchMyProperties = async () => {
+    setLoading(true);          // ✅ FIX 1
+    setError("");              // ✅ FIX 2
+
     try {
-      const res = await fetch("http://localhost:5000/property/my", {
-        headers: { Authorization: `Bearer ${token}` },
+      const res = await fetch(`${API}/property/my`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+
       const data = await res.json();
-      if (!res.ok) return setError(data.message);
+
+      if (!res.ok) {
+        setError(data.message || "Failed to fetch properties");
+        return;
+      }
+
       setProperties(data);
     } catch {
       setError("Something went wrong");
@@ -44,7 +58,7 @@ function SellerDashboard() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:5000/property", {
+      const res = await fetch(`${API}/property`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -58,8 +72,12 @@ function SellerDashboard() {
         }),
       });
 
-      if (!res.ok) return setError("Failed to add property");
+      if (!res.ok) {
+        setError("Failed to add property");
+        return;
+      }
 
+      // ✅ Reset form
       setForm({
         title: "",
         description: "",
@@ -68,8 +86,10 @@ function SellerDashboard() {
         city: "",
         locality: "",
         amenities: "",
+        sellerContact: "",
       });
 
+      // ✅ FIX 3 — force refetch
       fetchMyProperties();
     } catch {
       setError("Something went wrong");
@@ -83,6 +103,7 @@ function SellerDashboard() {
         <small>Your properties and listings</small>
       </div>
 
+      {/* Add property */}
       <div
         style={{
           background: "var(--bg-muted)",
@@ -104,6 +125,13 @@ function SellerDashboard() {
           <input name="city" placeholder="City" value={form.city} onChange={handleChange} />
           <input name="locality" placeholder="Locality" value={form.locality} onChange={handleChange} />
           <input name="amenities" placeholder="Amenities (comma separated)" value={form.amenities} onChange={handleChange} />
+          <input
+            name="sellerContact"
+            placeholder="Seller Contact (Phone / Email)"
+            value={form.sellerContact}
+            onChange={handleChange}
+            required
+          />
 
           <button
             type="submit"
@@ -118,23 +146,15 @@ function SellerDashboard() {
             Add property
           </button>
         </form>
+
+        {error && <p style={{ color: "red", marginTop: "0.5rem" }}>{error}</p>}
       </div>
 
+      {/* My listings */}
       <h3>My listings</h3>
 
       {loading ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          {[1, 2].map((i) => (
-            <div
-              key={i}
-              style={{
-                background: "var(--bg-muted)",
-                borderRadius: "16px",
-                height: "88px",
-              }}
-            />
-          ))}
-        </div>
+        <p>Loading properties...</p>
       ) : properties.length === 0 ? (
         <div>
           <p>No properties yet.</p>
