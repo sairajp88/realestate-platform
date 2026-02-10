@@ -20,7 +20,6 @@
 
 
 ---
----
 
 ### FIND HOMES ON THE GO
 ![o2nyggmjg7c81](https://github.com/user-attachments/assets/9b5f5157-3558-46a7-abb2-bcde1045066b)
